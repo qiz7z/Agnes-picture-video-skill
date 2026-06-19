@@ -1,0 +1,19 @@
+# Test files
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Config with API key
+.claude/skills/run-agnes-pic-video/config.json
+
+# Local settings
+.claude/settings.local.json
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
