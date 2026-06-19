@@ -210,30 +210,6 @@ node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --
 
 </details>
 
-## 🏗️ 项目结构
-
-```
-Agnes-picture-video-skill/
-├── 📄 README.md                          ← 英文文档
-├── 📄 README_CN.md                       ← 中文文档（本文件）
-├── 📄 .gitignore
-├── 📁 examples/                          ← 示例图片
-│   ├── 🖼️ text-to-image.png             ← 文生图示例
-│   └── 🖼️ image-to-image.png            ← 图生图示例
-└── 📁 .claude/skills/run-agnes-pic-video/
-    ├── 📄 SKILL.md                       ← Agent 使用说明（自包含）
-    ├── 📄 driver.mjs                     ← Node.js 驱动脚本
-    └── 📄 config.json                    ← API Key 配置（需创建）
-```
-
-## 🤖 Agent 兼容性
-
-| Agent | 支持情况 | 说明 |
-|:------|:-------:|:------|
-| Claude Code | ✅ | 完整支持 |
-| WorkBuddy | ✅ | 通过 SKILL.md |
-| 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
-
 ## 📖 Prompt 推荐
 
 ### 🖼️ 图片生成
@@ -271,6 +247,30 @@ Agnes-picture-video-skill/
 
 **示例：**
 > 从第一帧平滑过渡到第二帧，保持角色身份一致，镜头角度不变
+
+## 🏗️ 项目结构
+
+```
+Agnes-picture-video-skill/
+├── 📄 README.md                          ← 英文文档
+├── 📄 README_CN.md                       ← 中文文档（本文件）
+├── 📄 .gitignore
+├── 📁 examples/                          ← 示例图片
+│   ├── 🖼️ text-to-image.png             ← 文生图示例
+│   └── 🖼️ image-to-image.png            ← 图生图示例
+└── 📁 .claude/skills/run-agnes-pic-video/
+    ├── 📄 SKILL.md                       ← Agent 使用说明（自包含）
+    ├── 📄 driver.mjs                     ← Node.js 驱动脚本
+    └── 📄 config.json                    ← API Key 配置（需创建）
+```
+
+## 🤖 Agent 兼容性
+
+| Agent | 支持情况 | 说明 |
+|:------|:-------:|:------|
+| Claude Code | ✅ | 完整支持 |
+| WorkBuddy | ✅ | 通过 SKILL.md |
+| 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
 
 ## ⚠️ 重要说明
 
