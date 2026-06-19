@@ -1,5 +1,7 @@
 # Agnes AI Image & Video Skill
 
+English | [中文](README_CN.md)
+
 A skill for generating images and videos using Agnes AI's free API. Works with Claude Code, WorkBuddy, and other AI agents.
 
 ## What is this?
