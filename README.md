@@ -71,6 +71,46 @@ node .claude/skills/run-agnes-pic-video/driver.mjs image "一只可爱的猫" --
 node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output sunset.mp4
 ```
 
+## 🎨 效果展示
+
+### 文生图（agnes-image-2.0-flash）
+
+<table>
+<tr>
+<td width="50%">
+
+**Prompt:**
+> 一位身穿银色轻甲的少女站在悬浮于云海之上的古老石桥上，长发随风飘动，手中托着一颗散发柔和蓝光的水晶球。背景是巨大的发光古树，树根缠绕着残破的浮空岛屿，几只半透明的灵鹿在远处跳跃。画面采用电影级光影，丁达尔光效穿透云层，色调以冷蓝与暖金交织，超高细节，8K分辨率，奇幻插画风格
+
+</td>
+<td width="50%">
+
+<img src="examples/text-to-image.png" alt="Text-to-Image Example" width="100%"/>
+
+</td>
+</tr>
+</table>
+
+### 图生图（agnes-image-2.1-flash）
+
+<table>
+<tr>
+<td width="50%">
+
+**原图** → **吉卜力风格**
+
+**Prompt:**
+> 基于原图构图，将画面转换为吉卜力动画风格。保留银甲少女和发光水晶球的核心主体，背景的古树和浮空岛屿采用柔和的水彩笔触。少女的头发和衣摆增加随风飘动的动态模糊，水晶球的光芒更加温暖明亮，几只发光的微小光斑环绕在她周围。色彩明亮清新，充满治愈感，高质量动画截图，细腻的光影过渡
+
+</td>
+<td width="50%">
+
+<img src="examples/image-to-image.png" alt="Image-to-Image Example" width="100%"/>
+
+</td>
+</tr>
+</table>
+
 ## 💰 价格
 
 | 功能 | 价格 | 说明 |
@@ -177,6 +217,9 @@ Agnes-picture-video-skill/
 ├── 📄 README.md                          ← English documentation
 ├── 📄 README_CN.md                       ← Chinese documentation
 ├── 📄 .gitignore
+├── 📁 examples/                          ← 示例图片
+│   ├── 🖼️ text-to-image.png             ← 文生图示例
+│   └── 🖼️ image-to-image.png            ← 图生图示例
 └── 📁 .claude/skills/run-agnes-pic-video/
     ├── 📄 SKILL.md                       ← Agent instructions (self-contained)
     ├── 📄 driver.mjs                     ← Node.js driver script

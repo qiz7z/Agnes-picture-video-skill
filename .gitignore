@@ -1,9 +1,13 @@
-# Test files
+# Test files (except examples)
 *.mp4
 *.png
 *.jpg
 *.jpeg
 *.webp
+!examples/*.png
+!examples/*.jpg
+!examples/*.jpeg
+!examples/*.webp
 
 # Config with API key
 .claude/skills/run-agnes-pic-video/config.json
