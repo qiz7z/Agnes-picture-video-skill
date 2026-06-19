@@ -1,174 +1,231 @@
-# Agnes AI Image & Video Skill
+<![CDATA[<div align="center">
+
+# 🎨 Agnes AI Image & Video Skill
+
+**让 AI Agent 具备视觉创作能力**
+
+[![GitHub Stars](https://img.shields.io/github/stars/qiz7z/Agnes-picture-video-skill?style=social)](https://github.com/qiz7z/Agnes-picture-video-skill/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/qiz7z/Agnes-picture-video-skill?style=social)](https://github.com/qiz7z/Agnes-picture-video-skill/network/members)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)](https://nodejs.org)
 
 English | [中文](README_CN.md)
 
-A skill for generating images and videos using Agnes AI's free API. Works with Claude Code, WorkBuddy, and other AI agents.
+</div>
 
-## What is this?
+---
 
-This skill allows AI agents to generate images and videos using Agnes AI's API. It provides:
+## ✨ 一句话介绍
 
-- **SKILL.md** — Self-contained instructions that any agent can load and follow
-- **driver.mjs** — Node.js driver with auto-polling and file download (optional)
+> 一个让 Claude、WorkBuddy 等 AI Agent **免费**调用 Agnes AI API 生成图片和视频的 Skill。
 
-## Quick Start
+## 🚀 核心能力
 
-### 1. Get API Key
+<table>
+<tr>
+<td width="50%">
 
-Get a free API key from [agnes-ai.com](https://agnes-ai.com)
+### 🖼️ 图片生成
 
-### 2. Configure API Key
+- ✅ 文生图（Text-to-Image）
+- ✅ 图生图（Image-to-Image）
+- ✅ 两个模型可选
+- ✅ 支持本地文件上传
 
-**Option A: Config file (recommended)**
+</td>
+<td width="50%">
 
-Create `.claude/skills/run-agnes-pic-video/config.json`:
-```json
-{"api_key": "sk-your-api-key-here"}
-```
+### 🎬 视频生成
 
-**Option B: Environment variable**
+- ✅ 文生视频（Text-to-Video）
+- ✅ 图生视频（Image-to-Video）
+- ✅ 多图视频（Multi-Image）
+- ✅ 关键帧动画（Keyframe）
+
+</td>
+</tr>
+</table>
+
+## 📦 快速开始
+
+### Step 1️⃣ 获取 API Key
+
+访问 [agnes-ai.com](https://agnes-ai.com) 注册，**免费**获取 API Key。
+
+### Step 2️⃣ 配置 API Key
+
+**推荐：配置文件方式**
+
 ```bash
-export AGNES_API_KEY=sk-your-api-key-here
+# 创建配置文件
+echo '{"api_key": "sk-你的API密钥"}' > .claude/skills/run-agnes-pic-video/config.json
 ```
 
-### 3. Use the Skill
+### Step 3️⃣ 开始使用
 
-**With driver script (Node.js 18+):**
 ```bash
-# Text-to-image
-node .claude/skills/run-agnes-pic-video/driver.mjs image "A cute cat" --output cat.png
+# 🎨 生成图片
+node .claude/skills/run-agnes-pic-video/driver.mjs image "一只可爱的猫" --output cat.png
 
-# Image-to-image (agnes-image-2.1-flash)
-node .claude/skills/run-agnes-pic-video/driver.mjs image "Transform to cyberpunk" --model agnes-image-2.1-flash --image input.png --output output.png
-
-# Text-to-video
-node .claude/skills/run-agnes-pic-video/driver.mjs video "A sunset over the ocean" --output sunset.mp4
-
-# Image-to-video
-node .claude/skills/run-agnes-pic-video/driver.mjs video "Animate the character" --image photo.png --output anim.mp4
-
-# Multi-image video
-node .claude/skills/run-agnes-pic-video/driver.mjs video "Transform between images" --images "img1.png,img2.png" --output morph.mp4
-
-# Keyframe animation
-node .claude/skills/run-agnes-pic-video/driver.mjs video "Smooth transition" --images "key1.png,key2.png" --keyframes --output kf.mp4
+# 🎬 生成视频
+node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output sunset.mp4
 ```
 
-**With curl (works everywhere):**
+## 💰 价格
+
+| 功能 | 价格 | 说明 |
+|:-----|:-----|:-----|
+| 🖼️ 图片生成 | **$0.003/张** | 约 2 分钱人民币 |
+| 🎬 视频生成 | **免费** | 有额度限制 |
+
+> 💡 **是的，你没看错，视频生成免费！**
+
+## 🎯 功能详解
+
+<details>
+<summary><b>🖼️ 文生图（Text-to-Image）</b></summary>
+
 ```bash
-# Text-to-image (agnes-image-2.0-flash)
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.0-flash","prompt":"A cute cat","size":"1024x768","extra_body":{"response_format":"url"}}'
+# 默认模型
+node driver.mjs image "A cute cat" --output cat.png
 
-# Text-to-image (agnes-image-2.1-flash)
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.1-flash","prompt":"A cute cat","size":"1024x768","extra_body":{"response_format":"url"}}'
-
-# Image-to-image (agnes-image-2.1-flash)
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.1-flash","prompt":"Transform to cyberpunk while preserving composition","size":"1024x768","extra_body":{"image":["https://example.com/input.png"],"response_format":"url"}}'
-
-# Text-to-video
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"A sunset over the ocean","height":768,"width":1152,"num_frames":121,"frame_rate":24}'
-
-# Image-to-video
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"Animate the character","image":"https://example.com/img.png","num_frames":121,"frame_rate":24}'
-
-# Multi-image video
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"Transform between images","extra_body":{"image":["URL1","URL2"]},"num_frames":121,"frame_rate":24}'
-
-# Keyframe animation
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"Smooth transition","extra_body":{"image":["URL1","URL2"],"mode":"keyframes"},"num_frames":121,"frame_rate":24}'
+# 指定模型（agnes-image-2.1-flash 效果更好）
+node driver.mjs image "A cute cat" --model agnes-image-2.1-flash --output cat.png
 ```
 
-## Project Structure
+**支持模型：**
+- `agnes-image-2.0-flash` — 速度快
+- `agnes-image-2.1-flash` — 质量更高，支持图生图
+
+</details>
+
+<details>
+<summary><b>🎨 图生图（Image-to-Image）</b></summary>
+
+```bash
+# 本地图片
+node driver.mjs image "转换为赛博朋克风格" --model agnes-image-2.1-flash --image input.png --output output.png
+
+# URL 图片
+node driver.mjs image "转换为油画风格" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
+```
+
+**Prompt 技巧：** 说明**要改什么** + **要保留什么**
+
+> Transform into cyberpunk style with neon reflections while preserving the original composition
+
+</details>
+
+<details>
+<summary><b>🎬 文生视频（Text-to-Video）</b></summary>
+
+```bash
+node driver.mjs video "A sunset over the ocean, cinematic lighting" --output sunset.mp4
+```
+
+**Prompt 结构：** `[主体] + [动作] + [场景] + [镜头] + [光照] + [风格]`
+
+> A young girl in silver armor standing on a stone bridge, her hair flowing in the wind, slow camera zoom in, cinematic lighting, fantasy style
+
+</details>
+
+<details>
+<summary><b>📹 图生视频（Image-to-Video）</b></summary>
+
+```bash
+# 本地图片
+node driver.mjs video "让角色动起来" --image photo.png --output anim.mp4
+
+# URL 图片
+node driver.mjs video "让角色动起来" --image "https://example.com/img.png" --output anim.mp4
+```
+
+**Prompt 技巧：** 描述**什么要动** + **什么要保持不变**
+
+> Animate the character with subtle breathing motion, hair moving gently in the wind, while keeping the face and outfit consistent
+
+</details>
+
+<details>
+<summary><b>🎞️ 多图视频（Multi-Image）</b></summary>
+
+```bash
+node driver.mjs video "图片之间的平滑变换" --images "img1.png,img2.png" --output morph.mp4
+```
+
+**用途：** 在多张图片之间生成平滑过渡动画
+
+</details>
+
+<details>
+<summary><b>🎭 关键帧动画（Keyframe）</b></summary>
+
+```bash
+node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
+```
+
+**Prompt 技巧：** 描述**过渡关系** + **一致性元素**
+
+> Create a smooth transition from the first keyframe to the second keyframe, maintaining character identity and natural motion
+
+</details>
+
+## 🏗️ 项目结构
 
 ```
-agens-pic-video-skill/
-├── README.md
-└── .claude/skills/run-agnes-pic-video/
-    ├── SKILL.md       ← Agent-facing instructions (self-contained)
-    ├── driver.mjs     ← Node.js driver (optional)
-    └── config.json    ← API key config (create this)
+Agnes-picture-video-skill/
+├── 📄 README.md                          ← 英文文档
+├── 📄 README_CN.md                       ← 中文文档
+├── 📄 .gitignore
+└── 📁 .claude/skills/run-agnes-pic-video/
+    ├── 📄 SKILL.md                       ← Agent 使用说明（自包含）
+    ├── 📄 driver.mjs                     ← Node.js 驱动脚本
+    └── 📄 config.json                    ← API Key 配置（需创建）
 ```
 
-## Features
+## 🤖 Agent 兼容性
 
-### Image Generation
-- **Text-to-image**: Two models available
-  - `agnes-image-2.0-flash` — Default, fast
-  - `agnes-image-2.1-flash` — Newer, supports image-to-image
-- **Image-to-image**: Transform/edit existing images (agnes-image-2.1-flash only)
+| Agent | 支持情况 | 说明 |
+|:------|:--------:|:-----|
+| Claude Code | ✅ | 完整支持 |
+| WorkBuddy | ✅ | 通过 SKILL.md |
+| 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
 
-### Video Generation (all use `agnes-video-v2.0`, async, 5 seconds)
-- **Text-to-video**: Generate video from text prompt
-- **Image-to-video**: Animate a single image (local file or URL)
-- **Multi-image video**: Smooth transformation between multiple images
-- **Keyframe animation**: Keyframe-based animation with `mode: "keyframes"`
+## ⚠️ 重要说明
 
-### Prompt Recommendations
+> **API 地址：** `apihub.agnes-ai.com`（不是 `api.agnes-ai.com`）
 
-**Image generation (agnes-image-2.1-flash):**
-> `[Subject] + [Scene] + [Style] + [Lighting] + [Composition] + [Quality]`
-> For image-to-image: describe what to change AND what to keep
+> **图生图：** 输入图片放在 `extra_body.image` 数组中，不是顶层
 
-**Text-to-video:**
-> `[Subject] + [Action] + [Scene] + [Camera] + [Lighting] + [Style]`
+> **response_format：** 必须放在 `extra_body` 中，放顶层会报 400 错误
 
-**Image-to-video:**
-> Describe motion elements AND stability elements
+> **视频 URL：** 完成后在 `remixed_from_video_id` 字段中
 
-**Keyframe animation:**
-> Describe transition + consistency elements
+## 📚 文档
 
-### Driver Features
-- Auto-download files to disk
-- Auto-poll video tasks until completion
-- Support local files (auto-convert to base64) and URLs
-- `--model` option for image generation
-- `--image` option for image-to-image
+- [英文文档](README.md)
+- [中文文档](README_CN.md)
+- [Skill 详细说明](.claude/skills/run-agnes-pic-video/SKILL.md)
 
-## API Models
+## 🤝 贡献
 
-| Model | Type | Notes |
-|-------|------|-------|
-| `agnes-image-2.0-flash` | Image | Default, fast, text-to-image only |
-| `agnes-image-2.1-flash` | Image | Newer, supports text-to-image AND image-to-image |
-| `agnes-video-v2.0` | Video | Async, 5 seconds, poll for result |
+欢迎提交 Issue 和 Pull Request！
 
-## Important Notes
+## ⭐ Star
 
-- API base URL: `apihub.agnes-ai.com` (NOT `api.agnes-ai.com`)
-- Video URL is in `remixed_from_video_id` field when task completes
-- Video generation takes 1-3 minutes
-- **Image-to-image:** Input images go in `extra_body.image` array, NOT top level
-- **response_format:** Must be in `extra_body`, NOT at top level (causes 400 error)
-- **Base64 output:** Text-to-image uses `return_base64: true`; image-to-image uses `extra_body.response_format: "b64_json"`
-- **No tags needed:** Don't pass `tags: ["img2img"]` for image-to-image
-- For local images, driver auto-converts to base64 Data URI format
+如果这个项目对你有帮助，请给个 Star 支持一下！
 
-## Documentation
+<div align="center">
 
-See [SKILL.md](.claude/skills/run-agnes-pic-video/SKILL.md) for detailed usage instructions.
+**[⬆ 回到顶部](#-agnes-ai-image--video-skill)**
 
-## License
+</div>
 
-MIT
+---
+
+<div align="center">
+
+**Made with ❤️ by [qiz7z](https://github.com/qiz7z)**
+
+</div>
+]]>

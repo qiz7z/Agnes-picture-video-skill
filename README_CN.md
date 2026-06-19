@@ -1,210 +1,269 @@
-# Agnes AI 图片 & 视频生成 Skill
+<![CDATA[<div align="center">
+
+# 🎨 Agnes AI 图片 & 视频生成 Skill
+
+**让 AI Agent 具备视觉创作能力**
+
+[![GitHub Stars](https://img.shields.io/github/stars/qiz7z/Agnes-picture-video-skill?style=social)](https://github.com/qiz7z/Agnes-picture-video-skill/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/qiz7z/Agnes-picture-video-skill?style=social)](https://github.com/qiz7z/Agnes-picture-video-skill/network/members)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)](https://nodejs.org)
 
 [English](README.md) | 中文
 
-一个让 AI Agent 调用 Agnes AI 免费 API 生成图片和视频的 Skill。支持 Claude Code、WorkBuddy 等 Agent。
+</div>
 
-## 这是什么？
+---
 
-这个 Skill 让 AI Agent 可以使用 Agnes AI 的 API 生成图片和视频。它提供：
+## ✨ 一句话介绍
 
-- **SKILL.md** — 自包含的使用说明，任何 Agent 加载后都能直接使用
-- **driver.mjs** — Node.js 驱动脚本，支持自动轮询和文件下载（可选）
+> 一个让 Claude、WorkBuddy 等 AI Agent **免费**调用 Agnes AI API 生成图片和视频的 Skill。
 
-## 快速开始
+## 🚀 核心能力
 
-### 1. 获取 API Key
+<table>
+<tr>
+<td width="50%">
 
-访问 [agnes-ai.com](https://agnes-ai.com) 注册账号，免费获取 API Key。
+### 🖼️ 图片生成
 
-### 2. 配置 API Key
+- ✅ 文生图（Text-to-Image）
+- ✅ 图生图（Image-to-Image）
+- ✅ 两个模型可选
+- ✅ 支持本地文件上传
 
-**方式一：配置文件（推荐）**
+</td>
+<td width="50%">
 
-创建 `.claude/skills/run-agnes-pic-video/config.json`：
-```json
-{"api_key": "sk-你的API密钥"}
+### 🎬 视频生成
+
+- ✅ 文生视频（Text-to-Video）
+- ✅ 图生视频（Image-to-Video）
+- ✅ 多图视频（Multi-Image）
+- ✅ 关键帧动画（Keyframe）
+
+</td>
+</tr>
+</table>
+
+## 📦 快速开始
+
+### Step 1️⃣ 获取 API Key
+
+访问 [agnes-ai.com](https://agnes-ai.com) 注册，**免费**获取 API Key。
+
+### Step 2️⃣ 配置 API Key
+
+**推荐：配置文件方式**
+
+```bash
+# 创建配置文件
+echo '{"api_key": "sk-你的API密钥"}' > .claude/skills/run-agnes-pic-video/config.json
 ```
 
-**方式二：环境变量**
-```bash
-export AGNES_API_KEY=sk-你的API密钥
-```
+### Step 3️⃣ 开始使用
 
-### 3. 使用 Skill
-
-**使用 Driver 脚本（需要 Node.js 18+）：**
 ```bash
-# 文生图（默认：agnes-image-2.0-flash）
+# 🎨 生成图片
 node .claude/skills/run-agnes-pic-video/driver.mjs image "一只可爱的猫" --output cat.png
 
-# 文生图（agnes-image-2.1-flash，支持图生图）
-node .claude/skills/run-agnes-pic-video/driver.mjs image "一只猫" --model agnes-image-2.1-flash --output cat.png
-
-# 图生图（agnes-image-2.1-flash）
-node .claude/skills/run-agnes-pic-video/driver.mjs image "转换为赛博朋克风格" --model agnes-image-2.1-flash --image input.png --output output.png
-
-# 文生视频
+# 🎬 生成视频
 node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output sunset.mp4
-
-# 图生视频（本地图片）
-node .claude/skills/run-agnes-pic-video/driver.mjs video "让角色动起来" --image photo.png --output anim.mp4
-
-# 多图视频
-node .claude/skills/run-agnes-pic-video/driver.mjs video "图片之间的变换" --images "img1.png,img2.png" --output morph.mp4
-
-# 关键帧动画
-node .claude/skills/run-agnes-pic-video/driver.mjs video "平滑过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
 ```
 
-**使用 curl（通用方式）：**
+## 💰 价格
+
+| 功能 | 价格 | 说明 |
+|:-----|:-----|:-----|
+| 🖼️ 图片生成 | **$0.003/张** | 约 2 分钱人民币 |
+| 🎬 视频生成 | **免费** | 有额度限制 |
+
+> 💡 **是的，你没看错，视频生成免费！**
+
+## 🎯 功能详解
+
+<details>
+<summary><b>🖼️ 文生图（Text-to-Image）</b></summary>
+
 ```bash
-# 文生图（agnes-image-2.0-flash）
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.0-flash","prompt":"一只可爱的猫","size":"1024x768","extra_body":{"response_format":"url"}}'
+# 默认模型
+node driver.mjs image "一只可爱的猫" --output cat.png
 
-# 文生图（agnes-image-2.1-flash）
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.1-flash","prompt":"一只可爱的猫","size":"1024x768","extra_body":{"response_format":"url"}}'
-
-# 图生图（agnes-image-2.1-flash）
-curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-image-2.1-flash","prompt":"转换为赛博朋克风格，保留原图构图","size":"1024x768","extra_body":{"image":["https://example.com/input.png"],"response_format":"url"}}'
-
-# 文生视频
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"海边日落","height":768,"width":1152,"num_frames":121,"frame_rate":24}'
-
-# 图生视频
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"让角色动起来","image":"https://example.com/img.png","num_frames":121,"frame_rate":24}'
-
-# 多图视频
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"图片之间的变换","extra_body":{"image":["URL1","URL2"]},"num_frames":121,"frame_rate":24}'
-
-# 关键帧动画
-curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer 你的API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"agnes-video-v2.0","prompt":"平滑过渡","extra_body":{"image":["URL1","URL2"],"mode":"keyframes"},"num_frames":121,"frame_rate":24}'
+# 指定模型（agnes-image-2.1-flash 效果更好）
+node driver.mjs image "一只可爱的猫" --model agnes-image-2.1-flash --output cat.png
 ```
 
-## 项目结构
+**支持模型：**
+- `agnes-image-2.0-flash` — 速度快
+- `agnes-image-2.1-flash` — 质量更高，支持图生图
+
+</details>
+
+<details>
+<summary><b>🎨 图生图（Image-to-Image）</b></summary>
+
+```bash
+# 本地图片
+node driver.mjs image "转换为赛博朋克风格" --model agnes-image-2.1-flash --image input.png --output output.png
+
+# URL 图片
+node driver.mjs image "转换为油画风格" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
+```
+
+**Prompt 技巧：** 说明**要改什么** + **要保留什么**
+
+> 将画面转换为赛博朋克风格，添加霓虹灯和湿润路面反射，同时保留原始街道布局和建筑形状
+
+</details>
+
+<details>
+<summary><b>🎬 文生视频（Text-to-Video）</b></summary>
+
+```bash
+node driver.mjs video "海边日落，电影级光影" --output sunset.mp4
+```
+
+**Prompt 结构：** `[主体] + [动作] + [场景] + [镜头] + [光照] + [风格]`
+
+> 一位身穿银色轻甲的少女站在石桥上，长发随风飘动，缓慢推镜，电影级光影，奇幻插画风格
+
+</details>
+
+<details>
+<summary><b>📹 图生视频（Image-to-Video）</b></summary>
+
+```bash
+# 本地图片
+node driver.mjs video "让角色动起来" --image photo.png --output anim.mp4
+
+# URL 图片
+node driver.mjs video "让角色动起来" --image "https://example.com/img.png" --output anim.mp4
+```
+
+**Prompt 技巧：** 描述**什么要动** + **什么要保持不变**
+
+> 让角色的头发和衣服随风飘动，水晶球发出温暖的光芒，同时保持面部表情和服装不变
+
+</details>
+
+<details>
+<summary><b>🎞️ 多图视频（Multi-Image）</b></summary>
+
+```bash
+node driver.mjs video "图片之间的平滑变换" --images "img1.png,img2.png" --output morph.mp4
+```
+
+**用途：** 在多张图片之间生成平滑过渡动画
+
+</details>
+
+<details>
+<summary><b>🎭 关键帧动画（Keyframe）</b></summary>
+
+```bash
+node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
+```
+
+**Prompt 技巧：** 描述**过渡关系** + **一致性元素**
+
+> 从第一帧平滑过渡到第二帧，保持角色身份一致，镜头角度不变，动作自然流畅
+
+</details>
+
+## 🏗️ 项目结构
 
 ```
-agens-pic-video-skill/
-├── README.md            ← 英文文档
-├── README_CN.md         ← 中文文档（本文件）
-└── .claude/skills/run-agnes-pic-video/
-    ├── SKILL.md         ← Agent 使用说明（自包含）
-    ├── driver.mjs       ← Node.js 驱动脚本（可选）
-    └── config.json      ← API Key 配置（需要自己创建）
+Agnes-picture-video-skill/
+├── 📄 README.md                          ← 英文文档
+├── 📄 README_CN.md                       ← 中文文档（本文件）
+├── 📄 .gitignore
+└── 📁 .claude/skills/run-agnes-pic-video/
+    ├── 📄 SKILL.md                       ← Agent 使用说明（自包含）
+    ├── 📄 driver.mjs                     ← Node.js 驱动脚本
+    └── 📄 config.json                    ← API Key 配置（需创建）
 ```
 
-## 功能特性
+## 🤖 Agent 兼容性
 
-### 图片生成
-- **文生图**：两个模型可选
-  - `agnes-image-2.0-flash` — 默认，速度快
-  - `agnes-image-2.1-flash` — 新版本，支持图生图，复杂图像效果更好
-- **图生图**：基于已有图片进行风格转换、编辑、优化（仅 agnes-image-2.1-flash）
+| Agent | 支持情况 | 说明 |
+|:------|:--------:|:-----|
+| Claude Code | ✅ | 完整支持 |
+| WorkBuddy | ✅ | 通过 SKILL.md |
+| 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
 
-### 视频生成（均使用 agnes-video-v2.0，异步，5 秒）
-- **文生视频**：文字描述生成视频
-- **图生视频**：单张图片生成动态视频（支持本地文件和 URL）
-- **多图视频**：多张图片之间的平滑过渡
-- **关键帧动画**：基于关键帧的动画（设置 `mode: "keyframes"`）
+## 📖 Prompt 推荐
 
-### Prompt 推荐
+### 🖼️ 图片生成
 
-**图片生成（agnes-image-2.1-flash）：**
-> `[主体] + [场景] + [风格] + [光照] + [构图] + [质量]`
->
-> 图生图时，需要说明**要改什么**和**要保留什么**
+```
+[主体] + [场景] + [风格] + [光照] + [构图] + [质量]
+```
 
-**文生视频：**
-> `[主体] + [动作] + [场景] + [镜头运动] + [光照] + [风格]`
->
-> 示例：一位身穿银色轻甲的少女站在石桥上，长发随风飘动，缓慢推镜，电影级光影，奇幻插画风格
+**示例：**
+> 一位身穿银色轻甲的少女站在悬浮于云海之上的古老石桥上，电影级光影，丁达尔光效穿透云层，超高细节，8K分辨率，奇幻插画风格
 
-**图生视频：**
-> 描述**什么要动** + **什么要保持不变**
->
-> 示例：让角色的头发和衣服随风飘动，保持面部和服装不变
+### 🎬 文生视频
 
-**关键帧动画：**
-> 描述**过渡关系** + **一致性元素**
->
-> 示例：从第一帧平滑过渡到第二帧，保持角色身份和镜头角度一致
+```
+[主体] + [动作] + [场景] + [镜头运动] + [光照] + [风格]
+```
 
-### Driver 功能
-- 自动下载文件到本地
-- 自动轮询视频任务直到完成
-- 支持本地文件（自动转 Base64）和 URL
-- `--model` 选项选择图片模型
-- `--image` 选项进行图生图
+**示例：**
+> 一位少女站在石桥上，长发随风飘动，缓慢推镜，电影级光影，奇幻风格
 
-## 模型列表
+### 📹 图生视频
 
-| 模型 | 类型 | 说明 |
-|------|------|------|
-| `agnes-image-2.0-flash` | 图片 | 默认，速度快，仅支持文生图 |
-| `agnes-image-2.1-flash` | 图片 | 新版本，支持文生图和图生图 |
-| `agnes-video-v2.0` | 视频 | 异步生成，5 秒，需要轮询 |
+```
+[什么要动] + [什么要保持不变]
+```
 
-## 价格
+**示例：**
+> 让角色的头发和衣服随风飘动，水晶球发出温暖的光芒，同时保持面部表情和服装不变
 
-| 功能 | 价格 |
-|------|------|
-| 图片生成 | $0.003/张（约 2 分钱人民币） |
-| 视频生成 | 免费（有额度限制） |
+### 🎭 关键帧动画
 
-## 重要说明
+```
+[过渡关系] + [一致性元素]
+```
 
-- API 基础地址：`apihub.agnes-ai.com`（不是 `api.agnes-ai.com`）
-- 视频生成完成后，URL 在 `remixed_from_video_id` 字段中
-- 视频生成需要 1-3 分钟，必须轮询任务状态
-- **图生图**：输入图片放在 `extra_body.image` 数组中，不是顶层
-- **response_format**：必须放在 `extra_body` 中，放顶层会报 400 错误
-- **Base64 输出**：文生图用 `return_base64: true`；图生图用 `extra_body.response_format: "b64_json"`
-- **不需要 tags**：图生图不需要传 `tags: ["img2img"]`
-- 本地图片会自动转换为 Base64 Data URI 格式
+**示例：**
+> 从第一帧平滑过渡到第二帧，保持角色身份一致，镜头角度不变
 
-## 适用场景
+## ⚠️ 重要说明
 
-- **创意设计**：概念图、视觉探索、海报草图
-- **内容创作**：社交媒体素材、封面图、Banner
-- **产品视觉**：产品图、展示图
-- **动画制作**：关键帧动画、动态效果
-- **AI Agent 增强**：让 Claude 等 Agent 具备视觉创作能力
+> **API 地址：** `apihub.agnes-ai.com`（不是 `api.agnes-ai.com`）
 
-## 文档
+> **图生图：** 输入图片放在 `extra_body.image` 数组中，不是顶层
 
-详细使用说明请查看 [SKILL.md](.claude/skills/run-agnes-pic-video/SKILL.md)。
+> **response_format：** 必须放在 `extra_body` 中，放顶层会报 400 错误
 
-## 开源协议
+> **视频 URL：** 完成后在 `remixed_from_video_id` 字段中
 
-MIT
+## 📚 文档
 
-## 作者
+- [英文文档](README.md)
+- [中文文档](README_CN.md)
+- [Skill 详细说明](.claude/skills/run-agnes-pic-video/SKILL.md)
 
-- GitHub: [qiz7z](https://github.com/qiz7z)
-- 项目地址: [Agnes-picture-video-skill](https://github.com/qiz7z/Agnes-picture-video-skill)
+## 🤝 贡献
 
-## 致谢
+欢迎提交 Issue 和 Pull Request！
 
-- [Agnes AI](https://agnes-ai.com) — 提供免费 API
-- [Claude](https://claude.ai) — AI Agent
+## ⭐ Star
+
+如果这个项目对你有帮助，请给个 Star 支持一下！
+
+<div align="center">
+
+**[⬆ 回到顶部](#-agnes-ai-图片--视频生成-skill)**
+
+</div>
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [qiz7z](https://github.com/qiz7z)**
+
+</div>
+]]>
