@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🎨 Agnes AI 图片 & 视频生成 Skill
 
@@ -186,7 +186,7 @@ Agnes-picture-video-skill/
 ## 🤖 Agent 兼容性
 
 | Agent | 支持情况 | 说明 |
-|:------|:--------:|:-----|
+|:------|:-------:|:------|
 | Claude Code | ✅ | 完整支持 |
 | WorkBuddy | ✅ | 通过 SKILL.md |
 | 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
@@ -266,4 +266,3 @@ Agnes-picture-video-skill/
 **Made with ❤️ by [qiz7z](https://github.com/qiz7z)**
 
 </div>
-]]>

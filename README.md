@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🎨 Agnes AI Image & Video Skill
 
@@ -104,10 +104,10 @@ node driver.mjs image "A cute cat" --model agnes-image-2.1-flash --output cat.pn
 
 ```bash
 # 本地图片
-node driver.mjs image "转换为赛博朋克风格" --model agnes-image-2.1-flash --image input.png --output output.png
+node driver.mjs image "Transform to cyberpunk style" --model agnes-image-2.1-flash --image input.png --output output.png
 
 # URL 图片
-node driver.mjs image "转换为油画风格" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
+node driver.mjs image "Transform to oil painting style" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
 ```
 
 **Prompt 技巧：** 说明**要改什么** + **要保留什么**
@@ -123,7 +123,7 @@ node driver.mjs image "转换为油画风格" --model agnes-image-2.1-flash --im
 node driver.mjs video "A sunset over the ocean, cinematic lighting" --output sunset.mp4
 ```
 
-**Prompt 结构：** `[主体] + [动作] + [场景] + [镜头] + [光照] + [风格]`
+**Prompt 结构：** `[Subject] + [Action] + [Scene] + [Camera] + [Lighting] + [Style]`
 
 > A young girl in silver armor standing on a stone bridge, her hair flowing in the wind, slow camera zoom in, cinematic lighting, fantasy style
 
@@ -134,10 +134,10 @@ node driver.mjs video "A sunset over the ocean, cinematic lighting" --output sun
 
 ```bash
 # 本地图片
-node driver.mjs video "让角色动起来" --image photo.png --output anim.mp4
+node driver.mjs video "Animate the character" --image photo.png --output anim.mp4
 
 # URL 图片
-node driver.mjs video "让角色动起来" --image "https://example.com/img.png" --output anim.mp4
+node driver.mjs video "Animate the character" --image "https://example.com/img.png" --output anim.mp4
 ```
 
 **Prompt 技巧：** 描述**什么要动** + **什么要保持不变**
@@ -150,7 +150,7 @@ node driver.mjs video "让角色动起来" --image "https://example.com/img.png"
 <summary><b>🎞️ 多图视频（Multi-Image）</b></summary>
 
 ```bash
-node driver.mjs video "图片之间的平滑变换" --images "img1.png,img2.png" --output morph.mp4
+node driver.mjs video "Smooth transformation between images" --images "img1.png,img2.png" --output morph.mp4
 ```
 
 **用途：** 在多张图片之间生成平滑过渡动画
@@ -161,7 +161,7 @@ node driver.mjs video "图片之间的平滑变换" --images "img1.png,img2.png"
 <summary><b>🎭 关键帧动画（Keyframe）</b></summary>
 
 ```bash
-node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
+node driver.mjs video "Transition between keyframes" --images "key1.png,key2.png" --keyframes --output kf.mp4
 ```
 
 **Prompt 技巧：** 描述**过渡关系** + **一致性元素**
@@ -174,50 +174,50 @@ node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --
 
 ```
 Agnes-picture-video-skill/
-├── 📄 README.md                          ← 英文文档
-├── 📄 README_CN.md                       ← 中文文档
+├── 📄 README.md                          ← English documentation
+├── 📄 README_CN.md                       ← Chinese documentation
 ├── 📄 .gitignore
 └── 📁 .claude/skills/run-agnes-pic-video/
-    ├── 📄 SKILL.md                       ← Agent 使用说明（自包含）
-    ├── 📄 driver.mjs                     ← Node.js 驱动脚本
-    └── 📄 config.json                    ← API Key 配置（需创建）
+    ├── 📄 SKILL.md                       ← Agent instructions (self-contained)
+    ├── 📄 driver.mjs                     ← Node.js driver script
+    └── 📄 config.json                    ← API Key config (create this)
 ```
 
-## 🤖 Agent 兼容性
+## 🤖 Agent Compatibility
 
-| Agent | 支持情况 | 说明 |
-|:------|:--------:|:-----|
-| Claude Code | ✅ | 完整支持 |
-| WorkBuddy | ✅ | 通过 SKILL.md |
-| 其他 Agent | ✅ | 任何支持 Skill 的 Agent |
+| Agent | Support | Notes |
+|:------|:-------:|:------|
+| Claude Code | ✅ | Full support |
+| WorkBuddy | ✅ | Via SKILL.md |
+| Other Agents | ✅ | Any agent that supports Skills |
 
-## ⚠️ 重要说明
+## ⚠️ Important Notes
 
-> **API 地址：** `apihub.agnes-ai.com`（不是 `api.agnes-ai.com`）
+> **API Base URL:** `apihub.agnes-ai.com` (NOT `api.agnes-ai.com`)
 
-> **图生图：** 输入图片放在 `extra_body.image` 数组中，不是顶层
+> **Image-to-Image:** Put input images in `extra_body.image` array, NOT at top level
 
-> **response_format：** 必须放在 `extra_body` 中，放顶层会报 400 错误
+> **response_format:** Must be in `extra_body`, NOT at top level (causes 400 error)
 
-> **视频 URL：** 完成后在 `remixed_from_video_id` 字段中
+> **Video URL:** Located in `remixed_from_video_id` field after completion
 
-## 📚 文档
+## 📚 Documentation
 
-- [英文文档](README.md)
-- [中文文档](README_CN.md)
-- [Skill 详细说明](.claude/skills/run-agnes-pic-video/SKILL.md)
+- [English](README.md)
+- [中文](README_CN.md)
+- [Skill Details](.claude/skills/run-agnes-pic-video/SKILL.md)
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
 ## ⭐ Star
 
-如果这个项目对你有帮助，请给个 Star 支持一下！
+If this project helps you, please give it a Star!
 
 <div align="center">
 
-**[⬆ 回到顶部](#-agnes-ai-image--video-skill)**
+**[⬆ Back to Top](#-agnes-ai-image--video-skill)**
 
 </div>
 
@@ -228,4 +228,3 @@ Agnes-picture-video-skill/
 **Made with ❤️ by [qiz7z](https://github.com/qiz7z)**
 
 </div>
-]]>
