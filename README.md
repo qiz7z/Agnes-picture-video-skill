@@ -54,11 +54,21 @@ Visit [agnes-ai.com](https://agnes-ai.com) to register and get a **free** API Ke
 
 ### Step 2️⃣ Configure API Key
 
-**Recommended: Config file**
+**Option A: Config file (Recommended)**
+
+Create `.claude/skills/run-agnes-pic-video/config.json`:
+```json
+{"api_key": "sk-your-api-key-here"}
+```
+
+**Option B: Environment variable**
 
 ```bash
-# Create config file
-echo '{"api_key": "sk-your-api-key"}' > .claude/skills/run-agnes-pic-video/config.json
+# Linux/Mac
+export AGNES_API_KEY=sk-your-api-key-here
+
+# Windows PowerShell
+$env:AGNES_API_KEY="sk-your-api-key-here"
 ```
 
 ### Step 3️⃣ Start Using
@@ -120,27 +130,64 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "A sunset over the ocea
 
 > 💡 **Yes, you read that right - both image and video generation are FREE!**
 
-## 🎯 Feature Details
+## 🎯 Detailed Usage
 
-<details>
-<summary><b>🖼️ Text-to-Image</b></summary>
+### 🖼️ Text-to-Image
+
+**Using Driver:**
 
 ```bash
-# Default model
-node driver.mjs image "A cute cat" --output cat.png
+# Default model (agnes-image-2.0-flash)
+node driver.mjs image "A cute cat sitting on a windowsill" --output cat.png
 
-# Specify model (agnes-image-2.1-flash has better quality)
-node driver.mjs image "A cute cat" --model agnes-image-2.1-flash --output cat.png
+# Specify model (agnes-image-2.1-flash, better quality)
+node driver.mjs image "A cute cat sitting on a windowsill" --model agnes-image-2.1-flash --output cat.png
+
+# Custom size
+node driver.mjs image "A cute cat" --size 1024x1024 --output cat.png
+```
+
+**Using curl:**
+
+```bash
+# agnes-image-2.0-flash (default, fast)
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.0-flash",
+    "prompt": "A cute cat sitting on a windowsill",
+    "size": "1024x768",
+    "extra_body": {
+      "response_format": "url"
+    }
+  }'
+
+# agnes-image-2.1-flash (newer, better quality)
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "A cute cat sitting on a windowsill",
+    "size": "1024x768",
+    "extra_body": {
+      "response_format": "url"
+    }
+  }'
 ```
 
 **Supported Models:**
-- `agnes-image-2.0-flash` — Fast speed
-- `agnes-image-2.1-flash` — Higher quality, supports image-to-image
+| Model | Features |
+|:------|:---------|
+| `agnes-image-2.0-flash` | Fast speed, text-to-image only |
+| `agnes-image-2.1-flash` | Higher quality, supports text-to-image AND image-to-image |
 
-</details>
+---
 
-<details>
-<summary><b>🎨 Image-to-Image</b></summary>
+### 🎨 Image-to-Image (agnes-image-2.1-flash only)
+
+**Using Driver:**
 
 ```bash
 # Local file
@@ -150,65 +197,195 @@ node driver.mjs image "Transform to cyberpunk style" --model agnes-image-2.1-fla
 node driver.mjs image "Transform to oil painting style" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
 ```
 
-**Prompt Tips:** Describe **what to change** + **what to keep**
-
-> Transform into cyberpunk style with neon reflections while preserving the original composition
-
-</details>
-
-<details>
-<summary><b>🎬 Text-to-Video</b></summary>
+**Using curl:**
 
 ```bash
-node driver.mjs video "A sunset over the ocean, cinematic lighting" --output sunset.mp4
+# URL input
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "Transform into cyberpunk style while preserving composition",
+    "size": "1024x768",
+    "extra_body": {
+      "image": ["https://example.com/input.png"],
+      "response_format": "url"
+    }
+  }'
+
+# Base64 input (Data URI format)
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "Make it matte black while preserving composition",
+    "size": "1024x768",
+    "extra_body": {
+      "image": ["data:image/png;base64,BASE64_HERE"],
+      "response_format": "url"
+    }
+  }'
 ```
 
-**Prompt Structure:** `[Subject] + [Action] + [Scene] + [Camera] + [Lighting] + [Style]`
+**⚠️ Important:**
+- Input images go in `extra_body.image` array, NOT at top level
+- `response_format` must be in `extra_body`, NOT at top level
 
-> A young girl in silver armor standing on a stone bridge, her hair flowing in the wind, slow camera zoom in, cinematic lighting, fantasy style
+---
 
-</details>
+### 🎬 Text-to-Video
 
-<details>
-<summary><b>📹 Image-to-Video</b></summary>
+**Using Driver:**
+
+```bash
+node driver.mjs video "A sunset over the ocean, cinematic lighting, warm golden tones" --output sunset.mp4
+
+# Custom parameters
+node driver.mjs video "A cat playing" --width 1152 --height 768 --frames 121 --fps 24 --output cat.mp4
+```
+
+**Using curl:**
+
+```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "A sunset over the ocean, cinematic lighting, warm golden tones",
+    "height": 768,
+    "width": 1152,
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+**Parameters:**
+| Parameter | Default | Description |
+|:----------|:-------:|:------------|
+| `height` | 768 | Video height |
+| `width` | 1152 | Video width |
+| `num_frames` | 121 | Number of frames |
+| `frame_rate` | 24 | Frames per second |
+
+---
+
+### 📹 Image-to-Video
+
+**Using Driver:**
 
 ```bash
 # Local file
-node driver.mjs video "Animate the character" --image photo.png --output anim.mp4
+node driver.mjs video "Animate the character with subtle motion" --image photo.png --output anim.mp4
 
 # URL image
-node driver.mjs video "Animate the character" --image "https://example.com/img.png" --output anim.mp4
+node driver.mjs video "Animate the character with subtle motion" --image "https://example.com/img.png" --output anim.mp4
 ```
 
-**Prompt Tips:** Describe **what should move** + **what should stay stable**
-
-> Animate the character with subtle breathing motion, hair moving gently in the wind, while keeping the face and outfit consistent
-
-</details>
-
-<details>
-<summary><b>🎞️ Multi-Image Video</b></summary>
+**Using curl:**
 
 ```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "Animate the character with subtle breathing motion, hair moving gently in the wind",
+    "image": "https://example.com/image.png",
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+---
+
+### 🎞️ Multi-Image Video
+
+**Using Driver:**
+
+```bash
+# Local files (comma-separated)
 node driver.mjs video "Smooth transformation between images" --images "img1.png,img2.png" --output morph.mp4
+
+# Mix of local and URL
+node driver.mjs video "Smooth transformation" --images "local.png,https://example.com/remote.png" --output morph.mp4
 ```
 
-**Use case:** Generate smooth transition animations between multiple images
-
-</details>
-
-<details>
-<summary><b>🎭 Keyframe Animation</b></summary>
+**Using curl:**
 
 ```bash
-node driver.mjs video "Transition between keyframes" --images "key1.png,key2.png" --keyframes --output kf.mp4
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "Smooth transformation between images",
+    "extra_body": {
+      "image": ["https://example.com/img1.png", "https://example.com/img2.png"]
+    },
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
 ```
 
-**Prompt Tips:** Describe **transition relationship** + **consistency elements**
+---
 
-> Create a smooth transition from the first keyframe to the second keyframe, maintaining character identity and natural motion
+### 🎭 Keyframe Animation
 
-</details>
+**Using Driver:**
+
+```bash
+# Local files with --keyframes flag
+node driver.mjs video "Smooth transition between keyframes" --images "key1.png,key2.png" --keyframes --output kf.mp4
+```
+
+**Using curl:**
+
+```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "Smooth transition between keyframes, maintaining character identity",
+    "extra_body": {
+      "image": ["https://example.com/keyframe1.png", "https://example.com/keyframe2.png"],
+      "mode": "keyframes"
+    },
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+---
+
+### 📊 Poll Video Status
+
+All video generation is asynchronous and returns a `task_id`. Poll until complete:
+
+**Using Driver:**
+The driver automatically polls and downloads when complete.
+
+**Using curl:**
+
+```bash
+# Check status
+curl -sL "https://apihub.agnes-ai.com/v1/videos/TASK_ID" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+**Response:**
+```json
+{
+  "id": "task_xxxxx",
+  "status": "completed",
+  "remixed_from_video_id": "https://platform-outputs.agnes-ai.space/videos/..."
+}
+```
+
+When `status` is `"completed"`, the video URL is in `remixed_from_video_id` field.
 
 ## 📖 Prompt Recommendations
 
@@ -218,11 +395,20 @@ node driver.mjs video "Transition between keyframes" --images "key1.png,key2.png
 [Subject] + [Scene] + [Style] + [Lighting] + [Composition] + [Quality]
 ```
 
+**Example:**
+> A luminous floating city above a misty canyon at sunrise, cinematic realism, wide-angle composition, rich architectural details, soft golden light, high visual density
+
+**For image-to-image:** Describe what to change AND what to keep
+> Transform the scene into a rain-soaked cyberpunk night with neon reflections while preserving the original composition and main subject layout
+
 ### Text-to-Video
 
 ```
 [Subject] + [Action] + [Scene] + [Camera Movement] + [Lighting] + [Style]
 ```
+
+**Example:**
+> A young astronaut walking across a red desert planet, dust blowing in the wind, slow cinematic tracking shot, dramatic sunset lighting, realistic sci-fi style
 
 ### Image-to-Video
 
@@ -230,11 +416,17 @@ node driver.mjs video "Transition between keyframes" --images "key1.png,key2.png
 [What should move] + [What should stay stable]
 ```
 
+**Example:**
+> Animate the character with subtle breathing motion, hair moving gently in the wind, background lights flickering softly, while keeping the face and outfit consistent
+
 ### Keyframe Animation
 
 ```
 [Transition relationship] + [Consistency elements]
 ```
+
+**Example:**
+> Create a smooth transition from the first keyframe to the second keyframe, maintaining character identity, consistent camera angle, and natural motion between scenes
 
 ## 🏗️ Project Structure
 
@@ -269,6 +461,8 @@ Agnes-picture-video-skill/
 > **response_format:** Must be in `extra_body`, NOT at top level (causes 400 error)
 
 > **Video URL:** Located in `remixed_from_video_id` field after completion
+
+> **Video Generation:** Takes 1-3 minutes, driver auto-polls until complete
 
 ## 📚 Documentation
 

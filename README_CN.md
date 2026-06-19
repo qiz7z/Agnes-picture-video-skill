@@ -54,11 +54,21 @@
 
 ### Step 2️⃣ 配置 API Key
 
-**推荐：配置文件方式**
+**方式一：配置文件（推荐）**
+
+创建 `.claude/skills/run-agnes-pic-video/config.json`：
+```json
+{"api_key": "sk-你的API密钥"}
+```
+
+**方式二：环境变量**
 
 ```bash
-# 创建配置文件
-echo '{"api_key": "sk-你的API密钥"}' > .claude/skills/run-agnes-pic-video/config.json
+# Linux/Mac
+export AGNES_API_KEY=sk-你的API密钥
+
+# Windows PowerShell
+$env:AGNES_API_KEY="sk-你的API密钥"
 ```
 
 ### Step 3️⃣ 开始使用
@@ -120,27 +130,64 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output
 
 > 💡 **是的，你没看错，图片和视频生成都是免费的！**
 
-## 🎯 功能详解
+## 🎯 详细使用方法
 
-<details>
-<summary><b>🖼️ 文生图（Text-to-Image）</b></summary>
+### 🖼️ 文生图（Text-to-Image）
+
+**使用 Driver：**
 
 ```bash
-# 默认模型
-node driver.mjs image "一只可爱的猫" --output cat.png
+# 默认模型（agnes-image-2.0-flash）
+node driver.mjs image "一只可爱的猫坐在窗台上" --output cat.png
 
-# 指定模型（agnes-image-2.1-flash 效果更好）
-node driver.mjs image "一只可爱的猫" --model agnes-image-2.1-flash --output cat.png
+# 指定模型（agnes-image-2.1-flash，效果更好）
+node driver.mjs image "一只可爱的猫坐在窗台上" --model agnes-image-2.1-flash --output cat.png
+
+# 自定义尺寸
+node driver.mjs image "一只可爱的猫" --size 1024x1024 --output cat.png
 ```
 
-**支持模型：**
-- `agnes-image-2.0-flash` — 速度快
-- `agnes-image-2.1-flash` — 质量更高，支持图生图
+**使用 curl：**
 
-</details>
+```bash
+# agnes-image-2.0-flash（默认，速度快）
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.0-flash",
+    "prompt": "一只可爱的猫坐在窗台上",
+    "size": "1024x768",
+    "extra_body": {
+      "response_format": "url"
+    }
+  }'
 
-<details>
-<summary><b>🎨 图生图（Image-to-Image）</b></summary>
+# agnes-image-2.1-flash（新版本，质量更高）
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "一只可爱的猫坐在窗台上",
+    "size": "1024x768",
+    "extra_body": {
+      "response_format": "url"
+    }
+  }'
+```
+
+**支持的模型：**
+| 模型 | 特点 |
+|:-----|:-----|
+| `agnes-image-2.0-flash` | 速度快，仅支持文生图 |
+| `agnes-image-2.1-flash` | 质量更高，支持文生图和图生图 |
+
+---
+
+### 🎨 图生图（Image-to-Image）— 仅 agnes-image-2.1-flash
+
+**使用 Driver：**
 
 ```bash
 # 本地图片
@@ -150,69 +197,199 @@ node driver.mjs image "转换为赛博朋克风格" --model agnes-image-2.1-flas
 node driver.mjs image "转换为油画风格" --model agnes-image-2.1-flash --image "https://example.com/img.png" --output output.png
 ```
 
-**Prompt 技巧：** 说明**要改什么** + **要保留什么**
-
-> 将画面转换为赛博朋克风格，添加霓虹灯和湿润路面反射，同时保留原始街道布局和建筑形状
-
-</details>
-
-<details>
-<summary><b>🎬 文生视频（Text-to-Video）</b></summary>
+**使用 curl：**
 
 ```bash
-node driver.mjs video "海边日落，电影级光影" --output sunset.mp4
+# URL 输入
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "转换为赛博朋克风格，保留原图构图",
+    "size": "1024x768",
+    "extra_body": {
+      "image": ["https://example.com/input.png"],
+      "response_format": "url"
+    }
+  }'
+
+# Base64 输入（Data URI 格式）
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-image-2.1-flash",
+    "prompt": "转换为哑光黑色，保留原图构图",
+    "size": "1024x768",
+    "extra_body": {
+      "image": ["data:image/png;base64,BASE64_HERE"],
+      "response_format": "url"
+    }
+  }'
 ```
 
-**Prompt 结构：** `[主体] + [动作] + [场景] + [镜头] + [光照] + [风格]`
+**⚠️ 重要说明：**
+- 输入图片放在 `extra_body.image` 数组中，**不是**顶层
+- `response_format` 必须放在 `extra_body` 中，**不是**顶层
 
-> 一位身穿银色轻甲的少女站在石桥上，长发随风飘动，缓慢推镜，电影级光影，奇幻插画风格
+---
 
-</details>
+### 🎬 文生视频（Text-to-Video）
 
-<details>
-<summary><b>📹 图生视频（Image-to-Video）</b></summary>
+**使用 Driver：**
+
+```bash
+node driver.mjs video "海边日落，电影级光影，温暖金色调" --output sunset.mp4
+
+# 自定义参数
+node driver.mjs video "一只猫在玩耍" --width 1152 --height 768 --frames 121 --fps 24 --output cat.mp4
+```
+
+**使用 curl：**
+
+```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "海边日落，电影级光影，温暖金色调",
+    "height": 768,
+    "width": 1152,
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+**参数说明：**
+| 参数 | 默认值 | 说明 |
+|:-----|:------:|:-----|
+| `height` | 768 | 视频高度 |
+| `width` | 1152 | 视频宽度 |
+| `num_frames` | 121 | 帧数 |
+| `frame_rate` | 24 | 帧率 |
+
+---
+
+### 📹 图生视频（Image-to-Video）
+
+**使用 Driver：**
 
 ```bash
 # 本地图片
-node driver.mjs video "让角色动起来" --image photo.png --output anim.mp4
+node driver.mjs video "让角色动起来，头发随风飘动" --image photo.png --output anim.mp4
 
 # URL 图片
-node driver.mjs video "让角色动起来" --image "https://example.com/img.png" --output anim.mp4
+node driver.mjs video "让角色动起来，头发随风飘动" --image "https://example.com/img.png" --output anim.mp4
 ```
 
-**Prompt 技巧：** 描述**什么要动** + **什么要保持不变**
-
-> 让角色的头发和衣服随风飘动，水晶球发出温暖的光芒，同时保持面部表情和服装不变
-
-</details>
-
-<details>
-<summary><b>🎞️ 多图视频（Multi-Image）</b></summary>
+**使用 curl：**
 
 ```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "让角色动起来，头发随风飘动，保持面部表情不变",
+    "image": "https://example.com/image.png",
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+---
+
+### 🎞️ 多图视频（Multi-Image）
+
+**使用 Driver：**
+
+```bash
+# 本地图片（逗号分隔）
 node driver.mjs video "图片之间的平滑变换" --images "img1.png,img2.png" --output morph.mp4
+
+# 混合本地和 URL
+node driver.mjs video "平滑变换" --images "local.png,https://example.com/remote.png" --output morph.mp4
 ```
 
-**用途：** 在多张图片之间生成平滑过渡动画
-
-</details>
-
-<details>
-<summary><b>🎭 关键帧动画（Keyframe）</b></summary>
+**使用 curl：**
 
 ```bash
-node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "图片之间的平滑变换",
+    "extra_body": {
+      "image": ["https://example.com/img1.png", "https://example.com/img2.png"]
+    },
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
 ```
 
-**Prompt 技巧：** 描述**过渡关系** + **一致性元素**
+---
 
-> 从第一帧平滑过渡到第二帧，保持角色身份一致，镜头角度不变，动作自然流畅
+### 🎭 关键帧动画（Keyframe）
 
-</details>
+**使用 Driver：**
+
+```bash
+# 本地图片 + --keyframes 标志
+node driver.mjs video "关键帧之间的平滑过渡" --images "key1.png,key2.png" --keyframes --output kf.mp4
+```
+
+**使用 curl：**
+
+```bash
+curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
+  -H "Authorization: Bearer 你的API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agnes-video-v2.0",
+    "prompt": "关键帧之间的平滑过渡，保持角色身份一致",
+    "extra_body": {
+      "image": ["https://example.com/keyframe1.png", "https://example.com/keyframe2.png"],
+      "mode": "keyframes"
+    },
+    "num_frames": 121,
+    "frame_rate": 24
+  }'
+```
+
+---
+
+### 📊 查询视频状态
+
+所有视频生成都是异步的，会返回 `task_id`。需要轮询直到完成：
+
+**使用 Driver：**
+Driver 会自动轮询并在完成后下载视频。
+
+**使用 curl：**
+
+```bash
+# 查询状态
+curl -sL "https://apihub.agnes-ai.com/v1/videos/TASK_ID" \
+  -H "Authorization: Bearer 你的API_KEY"
+```
+
+**响应示例：**
+```json
+{
+  "id": "task_xxxxx",
+  "status": "completed",
+  "remixed_from_video_id": "https://platform-outputs.agnes-ai.space/videos/..."
+}
+```
+
+当 `status` 为 `"completed"` 时，视频 URL 在 `remixed_from_video_id` 字段中。
 
 ## 📖 Prompt 推荐
 
-### 🖼️ 图片生成
+### 图片生成
 
 ```
 [主体] + [场景] + [风格] + [光照] + [构图] + [质量]
@@ -221,7 +398,10 @@ node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --
 **示例：**
 > 一位身穿银色轻甲的少女站在悬浮于云海之上的古老石桥上，电影级光影，丁达尔光效穿透云层，超高细节，8K分辨率，奇幻插画风格
 
-### 🎬 文生视频
+**图生图：** 说明要改什么 + 要保留什么
+> 将画面转换为赛博朋克风格，添加霓虹灯和湿润路面反射，同时保留原始街道布局和建筑形状
+
+### 文生视频
 
 ```
 [主体] + [动作] + [场景] + [镜头运动] + [光照] + [风格]
@@ -230,7 +410,7 @@ node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --
 **示例：**
 > 一位少女站在石桥上，长发随风飘动，缓慢推镜，电影级光影，奇幻风格
 
-### 📹 图生视频
+### 图生视频
 
 ```
 [什么要动] + [什么要保持不变]
@@ -239,7 +419,7 @@ node driver.mjs video "关键帧之间的过渡" --images "key1.png,key2.png" --
 **示例：**
 > 让角色的头发和衣服随风飘动，水晶球发出温暖的光芒，同时保持面部表情和服装不变
 
-### 🎭 关键帧动画
+### 关键帧动画
 
 ```
 [过渡关系] + [一致性元素]
@@ -281,6 +461,8 @@ Agnes-picture-video-skill/
 > **response_format：** 必须放在 `extra_body` 中，放顶层会报 400 错误
 
 > **视频 URL：** 完成后在 `remixed_from_video_id` 字段中
+
+> **视频生成：** 需要 1-3 分钟，Driver 会自动轮询直到完成
 
 ## 📚 文档
 
