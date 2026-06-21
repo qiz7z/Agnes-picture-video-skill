@@ -86,19 +86,26 @@ async function generateImage(prompt, options = {}) {
 
   console.log(`Generating image: "${prompt}" (${size}, model: ${model})`);
 
-  const response = await fetch(`${API_BASE}/images/generations`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/images/generations`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    console.error("Network error:", err.message);
+    console.error("Please check your internet connection and try again.");
+    process.exit(1);
+  }
 
   const data = await response.json();
 
   if (data.error) {
-    console.error("Error:", data.error.message);
+    console.error("API Error:", data.error.message);
     process.exit(1);
   }
 
@@ -115,8 +122,11 @@ async function generateImage(prompt, options = {}) {
   if (options.output) {
     console.log(`Downloading to: ${options.output}`);
     const imgResponse = await fetch(imageUrl);
+    if (!imgResponse.ok) {
+      console.error(`Error: Failed to download image (${imgResponse.status})`);
+      process.exit(1);
+    }
     const buffer = Buffer.from(await imgResponse.arrayBuffer());
-    const fs = await import("fs");
     fs.writeFileSync(options.output, buffer);
     console.log(`Saved: ${options.output}`);
   }
@@ -196,19 +206,26 @@ async function generateVideo(prompt, options = {}) {
 
   console.log(`Generating video: "${prompt}" (${width}x${height}, ${numFrames} frames, ${frameRate}fps)`);
 
-  const response = await fetch(`${API_BASE}/videos`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/videos`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    console.error("Network error:", err.message);
+    console.error("Please check your internet connection and try again.");
+    process.exit(1);
+  }
 
   const data = await response.json();
 
   if (data.error) {
-    console.error("Error:", data.error.message);
+    console.error("API Error:", data.error.message);
     process.exit(1);
   }
 
@@ -227,8 +244,11 @@ async function generateVideo(prompt, options = {}) {
       if (options.output) {
         console.log(`Downloading to: ${options.output}`);
         const vidResponse = await fetch(result.video_url);
+        if (!vidResponse.ok) {
+          console.error(`Error: Failed to download video (${vidResponse.status})`);
+          process.exit(1);
+        }
         const buffer = Buffer.from(await vidResponse.arrayBuffer());
-        const fs = await import("fs");
         fs.writeFileSync(options.output, buffer);
         console.log(`Saved: ${options.output}`);
       }
@@ -244,16 +264,22 @@ async function pollVideoStatus(taskId, apiKey, maxAttempts = 60) {
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
 
-    const response = await fetch(`${API_BASE}/videos/${taskId}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
+    let response;
+    try {
+      response = await fetch(`${API_BASE}/videos/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+    } catch (err) {
+      console.error("Network error during polling:", err.message);
+      continue; // Retry on network error
+    }
 
     const data = await response.json();
 
     if (data.error) {
-      console.error("Error:", data.error.message);
+      console.error("API Error:", data.error.message);
       return data;
     }
 
@@ -279,11 +305,17 @@ async function pollVideoStatus(taskId, apiKey, maxAttempts = 60) {
 async function checkStatus(taskId) {
   const apiKey = getApiKey();
 
-  const response = await fetch(`${API_BASE}/videos/${taskId}`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/videos/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+  } catch (err) {
+    console.error("Network error:", err.message);
+    process.exit(1);
+  }
 
   const data = await response.json();
   console.log(JSON.stringify(data, null, 2));
@@ -317,11 +349,29 @@ function parseArgs(args) {
 async function main() {
   const args = process.argv.slice(2);
 
-  if (args.length === 0) {
+  if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
+    console.log("Agnes AI Image & Video Generation Driver");
+    console.log("");
     console.log("Usage:");
-    console.log('  node driver.mjs image "prompt" [--size 1024x768] [--output path.png]');
-    console.log('  node driver.mjs video "prompt" [--width 1152] [--height 768] [--frames 121] [--fps 24] [--output path.mp4]');
-    console.log("  node driver.mjs status <task_id>");
+    console.log('  node driver.mjs image "prompt" [options]     Generate image');
+    console.log('  node driver.mjs video "prompt" [options]     Generate video');
+    console.log('  node driver.mjs status <task_id>             Check video status');
+    console.log("");
+    console.log("Image options:");
+    console.log("  --size <WxH>        Image size (default: 1024x768)");
+    console.log("  --model <model>     Model: agnes-image-2.0-flash, agnes-image-2.1-flash");
+    console.log("  --image <path>      Input image for image-to-image (agnes-image-2.1-flash)");
+    console.log("  --output <path>     Save image to file");
+    console.log("");
+    console.log("Video options:");
+    console.log("  --width <num>       Video width (default: 1152)");
+    console.log("  --height <num>      Video height (default: 768)");
+    console.log("  --frames <num>      Number of frames (default: 121)");
+    console.log("  --fps <num>         Frame rate (default: 24)");
+    console.log("  --image <path>      Input image for image-to-video");
+    console.log("  --images <paths>    Comma-separated images for multi-image/keyframe");
+    console.log("  --keyframes         Enable keyframe mode (use with --images)");
+    console.log("  --output <path>     Save video to file");
     process.exit(0);
   }
 
