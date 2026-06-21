@@ -128,7 +128,7 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output
 <td width="50%">
 
 **提示词：**
-> Genshin Impact anime style, a beautiful young girl riding a white horse, holding a bouquet of flowers, coming towards the viewer, flowing dress and hair in the wind, magical fantasy landscape background with floating islands and glowing particles, vibrant colors, detailed anime art style, cinematic lighting, 8K quality
+> Genshin Impact anime style, a beautiful young girl in a flowing white dress riding gracefully on a white horse, a bouquet of colorful flowers in her arms, long hair flowing in the wind, approaching the viewer on a magical path, fantasy landscape with glowing trees and floating petals, soft golden hour lighting, vibrant colors, high quality anime art, 8K detail, cinematic composition
 
 </td>
 <td width="50%">
