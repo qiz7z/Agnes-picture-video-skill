@@ -18,6 +18,12 @@
 # Node
 node_modules/
 
+# WeChat article (separate use)
+article.md
+
+# GitHub profile (belongs to qiz7z/qiz7z repo)
+profile/
+
 # OS
 .DS_Store
 Thumbs.db
