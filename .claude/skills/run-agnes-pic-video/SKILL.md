@@ -7,14 +7,21 @@ description: Generate images and videos using Agnes AI free API. Supports text-t
 
 Generate images and videos using Agnes AI's free API.
 
-## First: Get API Key
+## ⚠️ IMPORTANT: API Key Setup
 
-If you don't have an API key yet, ask the user:
+**Before using this skill, you MUST get the API key from the user.**
+
+Ask the user:
 > "请提供你的 Agnes AI API key（可在 agnes-ai.com 免费获取）"
 
-Then save it to `.claude/skills/run-agnes-pic-video/config.json`:
-```json
-{"api_key": "sk-user-provided-key"}
+Once you have the key, use it directly in all curl commands by replacing `YOUR_API_KEY` with the actual key.
+
+**Example:**
+```bash
+curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
+  -H "Authorization: Bearer sk-actual-key-here" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"agnes-image-2.0-flash","prompt":"A cute cat","size":"1024x768","extra_body":{"response_format":"url"}}'
 ```
 
 ## Quick Start (curl)
@@ -22,15 +29,15 @@ Then save it to `.claude/skills/run-agnes-pic-video/config.json`:
 ### Generate Image (Text-to-Image)
 
 ```bash
-# agnes-image-2.0-flash (default)
+# agnes-image-2.0-flash (default, fast)
 curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-image-2.0-flash","prompt":"YOUR_PROMPT","size":"1024x768","extra_body":{"response_format":"url"}}'
 
-# agnes-image-2.1-flash (newer, better for complex images)
+# agnes-image-2.1-flash (newer, better quality, supports image-to-image)
 curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-image-2.1-flash","prompt":"YOUR_PROMPT","size":"1024x768","extra_body":{"response_format":"url"}}'
 ```
@@ -42,13 +49,13 @@ Returns JSON with `data[0].url` — the image URL.
 ```bash
 # URL input
 curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-image-2.1-flash","prompt":"Transform into cyberpunk style while preserving composition","size":"1024x768","extra_body":{"image":["https://example.com/input.png"],"response_format":"url"}}'
 
 # Base64 input (Data URI format)
 curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-image-2.1-flash","prompt":"Make it matte black while preserving composition","size":"1024x768","extra_body":{"image":["data:image/png;base64,BASE64_HERE"],"response_format":"url"}}'
 ```
@@ -59,7 +66,7 @@ curl -sL "https://apihub.agnes-ai.com/v1/images/generations" \
 
 ```bash
 curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-video-v2.0","prompt":"YOUR_PROMPT","height":768,"width":1152,"num_frames":121,"frame_rate":24}'
 ```
@@ -68,7 +75,7 @@ curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
 
 ```bash
 curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-video-v2.0","prompt":"YOUR_PROMPT","image":"https://example.com/image.png","num_frames":121,"frame_rate":24}'
 ```
@@ -77,7 +84,7 @@ curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
 
 ```bash
 curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-video-v2.0","prompt":"YOUR_PROMPT","extra_body":{"image":["https://example.com/img1.png","https://example.com/img2.png"]},"num_frames":121,"frame_rate":24}'
 ```
@@ -86,7 +93,7 @@ curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
 
 ```bash
 curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
-  -H "Authorization: Bearer API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"agnes-video-v2.0","prompt":"YOUR_PROMPT","extra_body":{"image":["https://example.com/keyframe1.png","https://example.com/keyframe2.png"],"mode":"keyframes"},"num_frames":121,"frame_rate":24}'
 ```
@@ -96,7 +103,7 @@ curl -sL -X POST "https://apihub.agnes-ai.com/v1/videos" \
 All video generation returns `task_id` — poll until complete:
 
 ```bash
-curl -sL "https://apihub.agnes-ai.com/v1/videos/TASK_ID" -H "Authorization: Bearer API_KEY"
+curl -sL "https://apihub.agnes-ai.com/v1/videos/TASK_ID" -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 When `status` is `"completed"`, the video URL is in `remixed_from_video_id` field.
@@ -126,6 +133,12 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "prompt" --images "img1
 
 # Keyframe animation
 node .claude/skills/run-agnes-pic-video/driver.mjs video "prompt" --images "key1.png,key2.png" --keyframes --output output.mp4
+
+# Check video status
+node .claude/skills/run-agnes-pic-video/driver.mjs status task_xxxxx
+
+# Show help
+node .claude/skills/run-agnes-pic-video/driver.mjs --help
 ```
 
 The driver reads API key from: environment variable `AGNES_API_KEY` > `config.json` in skill dir.
