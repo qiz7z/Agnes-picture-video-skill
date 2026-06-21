@@ -17,6 +17,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const API_BASE = "https://apihub.agnes-ai.com/v1";
+const API_TIMEOUT = 60000; // 60 seconds timeout for API calls
+const DOWNLOAD_TIMEOUT = 300000; // 5 minutes timeout for file downloads
+
+// Fetch with timeout support
+async function fetchWithTimeout(url, options = {}, timeout = API_TIMEOUT) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 function getApiKey() {
   // 1. Check environment variable
@@ -88,7 +106,7 @@ async function generateImage(prompt, options = {}) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}/images/generations`, {
+    response = await fetchWithTimeout(`${API_BASE}/images/generations`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -97,7 +115,11 @@ async function generateImage(prompt, options = {}) {
       body: JSON.stringify(body),
     });
   } catch (err) {
-    console.error("Network error:", err.message);
+    if (err.name === "AbortError") {
+      console.error("Error: API request timeout (60s)");
+    } else {
+      console.error("Network error:", err.message);
+    }
     console.error("Please check your internet connection and try again.");
     process.exit(1);
   }
@@ -121,7 +143,17 @@ async function generateImage(prompt, options = {}) {
   // Download if output path specified
   if (options.output) {
     console.log(`Downloading to: ${options.output}`);
-    const imgResponse = await fetch(imageUrl);
+    let imgResponse;
+    try {
+      imgResponse = await fetchWithTimeout(imageUrl, {}, DOWNLOAD_TIMEOUT);
+    } catch (err) {
+      if (err.name === "AbortError") {
+        console.error("Error: Image download timeout (5min)");
+      } else {
+        console.error("Download error:", err.message);
+      }
+      process.exit(1);
+    }
     if (!imgResponse.ok) {
       console.error(`Error: Failed to download image (${imgResponse.status})`);
       process.exit(1);
@@ -208,7 +240,7 @@ async function generateVideo(prompt, options = {}) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}/videos`, {
+    response = await fetchWithTimeout(`${API_BASE}/videos`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -217,7 +249,11 @@ async function generateVideo(prompt, options = {}) {
       body: JSON.stringify(body),
     });
   } catch (err) {
-    console.error("Network error:", err.message);
+    if (err.name === "AbortError") {
+      console.error("Error: API request timeout (60s)");
+    } else {
+      console.error("Network error:", err.message);
+    }
     console.error("Please check your internet connection and try again.");
     process.exit(1);
   }
@@ -243,7 +279,17 @@ async function generateVideo(prompt, options = {}) {
 
       if (options.output) {
         console.log(`Downloading to: ${options.output}`);
-        const vidResponse = await fetch(result.video_url);
+        let vidResponse;
+        try {
+          vidResponse = await fetchWithTimeout(result.video_url, {}, DOWNLOAD_TIMEOUT);
+        } catch (err) {
+          if (err.name === "AbortError") {
+            console.error("Error: Video download timeout (5min)");
+          } else {
+            console.error("Download error:", err.message);
+          }
+          process.exit(1);
+        }
         if (!vidResponse.ok) {
           console.error(`Error: Failed to download video (${vidResponse.status})`);
           process.exit(1);
@@ -266,13 +312,17 @@ async function pollVideoStatus(taskId, apiKey, maxAttempts = 60) {
 
     let response;
     try {
-      response = await fetch(`${API_BASE}/videos/${taskId}`, {
+      response = await fetchWithTimeout(`${API_BASE}/videos/${taskId}`, {
         headers: {
           Authorization: `Bearer ${apiKey}`,
         },
       });
     } catch (err) {
-      console.error("Network error during polling:", err.message);
+      if (err.name === "AbortError") {
+        console.error("Polling timeout, retrying...");
+      } else {
+        console.error("Network error during polling:", err.message);
+      }
       continue; // Retry on network error
     }
 
@@ -307,13 +357,17 @@ async function checkStatus(taskId) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}/videos/${taskId}`, {
+    response = await fetchWithTimeout(`${API_BASE}/videos/${taskId}`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
     });
   } catch (err) {
-    console.error("Network error:", err.message);
+    if (err.name === "AbortError") {
+      console.error("Error: API request timeout (60s)");
+    } else {
+      console.error("Network error:", err.message);
+    }
     process.exit(1);
   }
 
