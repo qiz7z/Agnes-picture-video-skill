@@ -121,6 +121,24 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "A sunset over the ocea
 </tr>
 </table>
 
+### Genshin Impact Style (agnes-image-2.1-flash)
+
+<table>
+<tr>
+<td width="50%">
+
+**Prompt:**
+> Genshin Impact anime style, a beautiful young girl riding a white horse, holding a bouquet of flowers, coming towards the viewer, flowing dress and hair in the wind, magical fantasy landscape background with floating islands and glowing particles, vibrant colors, detailed anime art style, cinematic lighting, 8K quality
+
+</td>
+<td width="50%">
+
+<img src="examples/genshin-style.png" alt="Genshin Impact Style Example" width="100%"/>
+
+</td>
+</tr>
+</table>
+
 ## 💰 Pricing
 
 | Feature | Price | Notes |

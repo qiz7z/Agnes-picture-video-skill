@@ -121,6 +121,24 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output
 </tr>
 </table>
 
+### 原神风格（agnes-image-2.1-flash）
+
+<table>
+<tr>
+<td width="50%">
+
+**提示词：**
+> Genshin Impact anime style, a beautiful young girl riding a white horse, holding a bouquet of flowers, coming towards the viewer, flowing dress and hair in the wind, magical fantasy landscape background with floating islands and glowing particles, vibrant colors, detailed anime art style, cinematic lighting, 8K quality
+
+</td>
+<td width="50%">
+
+<img src="examples/genshin-style.png" alt="原神风格示例" width="100%"/>
+
+</td>
+</tr>
+</table>
+
 ## 💰 价格
 
 | 功能 | 价格 | 说明 |
