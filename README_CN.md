@@ -133,7 +133,7 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output
 </td>
 <td width="50%">
 
-<img src="examples/genshin-style.png" alt="原神风格示例" width="100%"/>
+<img src="examples/genshin-style-v2.png" alt="原神风格示例" width="100%"/>
 
 </td>
 </tr>
