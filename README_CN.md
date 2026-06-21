@@ -130,6 +130,50 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "海边日落" --output
 
 > 💡 **是的，你没看错，图片和视频生成都是免费的！**
 
+## 🛠️ Driver 帮助
+
+```bash
+# 查看所有可用命令和选项
+node driver.mjs --help
+node driver.mjs -h
+```
+
+**输出：**
+```
+Agnes AI Image & Video Generation Driver
+
+Usage:
+  node driver.mjs image "prompt" [options]     Generate image
+  node driver.mjs video "prompt" [options]     Generate video
+  node driver.mjs status <task_id>             Check video status
+
+Image options:
+  --size <WxH>        Image size (default: 1024x768)
+  --model <model>     Model: agnes-image-2.0-flash, agnes-image-2.1-flash
+  --image <path>      Input image for image-to-image (agnes-image-2.1-flash)
+  --output <path>     Save image to file
+
+Video options:
+  --width <num>       Video width (default: 1152)
+  --height <num>      Video height (default: 768)
+  --frames <num>      Number of frames (default: 121)
+  --fps <num>         Frame rate (default: 24)
+  --image <path>      Input image for image-to-video
+  --images <paths>    Comma-separated images for multi-image/keyframe
+  --keyframes         Enable keyframe mode (use with --images)
+  --output <path>     Save video to file
+```
+
+## ⏱️ 超时设置
+
+| 操作 | 超时时间 |
+|:-----|:--------:|
+| API 调用（图片/视频生成） | 60 秒 |
+| 文件下载（图片/视频） | 5 分钟 |
+| 轮询单次请求 | 60 秒（失败自动重试） |
+
+如果超时，Driver 会显示清晰的错误提示。
+
 ## 🎯 详细使用方法
 
 ### 🖼️ 文生图（Text-to-Image）

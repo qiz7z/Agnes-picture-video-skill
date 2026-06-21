@@ -130,6 +130,50 @@ node .claude/skills/run-agnes-pic-video/driver.mjs video "A sunset over the ocea
 
 > 💡 **Yes, you read that right - both image and video generation are FREE!**
 
+## 🛠️ Driver Help
+
+```bash
+# Show all available commands and options
+node driver.mjs --help
+node driver.mjs -h
+```
+
+**Output:**
+```
+Agnes AI Image & Video Generation Driver
+
+Usage:
+  node driver.mjs image "prompt" [options]     Generate image
+  node driver.mjs video "prompt" [options]     Generate video
+  node driver.mjs status <task_id>             Check video status
+
+Image options:
+  --size <WxH>        Image size (default: 1024x768)
+  --model <model>     Model: agnes-image-2.0-flash, agnes-image-2.1-flash
+  --image <path>      Input image for image-to-image (agnes-image-2.1-flash)
+  --output <path>     Save image to file
+
+Video options:
+  --width <num>       Video width (default: 1152)
+  --height <num>      Video height (default: 768)
+  --frames <num>      Number of frames (default: 121)
+  --fps <num>         Frame rate (default: 24)
+  --image <path>      Input image for image-to-video
+  --images <paths>    Comma-separated images for multi-image/keyframe
+  --keyframes         Enable keyframe mode (use with --images)
+  --output <path>     Save video to file
+```
+
+## ⏱️ Timeout Settings
+
+| Operation | Timeout |
+|:----------|:-------:|
+| API calls (image/video generation) | 60 seconds |
+| File downloads (image/video) | 5 minutes |
+| Polling single request | 60 seconds (auto-retry on failure) |
+
+If a timeout occurs, the driver will display a clear error message.
+
 ## 🎯 Detailed Usage
 
 ### 🖼️ Text-to-Image
